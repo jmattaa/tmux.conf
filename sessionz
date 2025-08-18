@@ -13,7 +13,7 @@ if [[ -z "$choice" ]]; then
 fi
 
 if [[ "$choice" == "$new_session_msg" ]]; then
-    dir=$(find ~/dev ~ -maxdepth 1 -type d 2>/dev/null | \
+    dir=$(find ~ -maxdepth 2 -type d 2>/dev/null | \
         fzf --border=rounded --border-label="Directories")
     if [[ -z "$dir" ]]; then
         exit 0
