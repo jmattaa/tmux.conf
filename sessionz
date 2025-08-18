@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+
+current_session=$(tmux display-message -p '#S')
+sessions=$(tmux list-sessions -F '#S' | grep -v "^$current_session\$")
+
+new_session_msg="[new session]"
+
+choice=$( (echo "$sessions" && echo "$new_session_msg") | \
+    fzf --border=rounded --border-label="Projects" )
+
+if [[ -z "$choice" ]]; then
+    exit 0
+fi
+
+if [[ "$choice" == "$new_session_msg" ]]; then
+    dir=$(find ~/dev ~ -maxdepth 1 -type d 2>/dev/null | \
+        fzf --border=rounded --border-label="Directories")
+    if [[ -z "$dir" ]]; then
+        exit 0
+    fi
+    cd "$dir" || exit 1
+
+    # make sure jmattaa/scripts exists!!!!!!!
+    tn
+else
+    tmux switch-client -t "$choice"
+fi
+
