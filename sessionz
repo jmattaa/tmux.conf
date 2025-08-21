@@ -3,26 +3,24 @@
 current_session=$(tmux display-message -p '#S')
 sessions=$(tmux list-sessions -F '#S' | grep -v "^$current_session\$")
 
-new_session_msg="[new session]"
+fzf_flags=("--border=rounded" "--border-label=$current_session")
 
-choice=$( (echo "$sessions" && echo "$new_session_msg") | \
-    fzf --border=rounded --border-label="Projects" )
+session_picker=$(echo "$sessions" | fzf "${fzf_flags[@]}" \
+    --preview="tmux display-message -p -t {} '#{session_path}' | xargs lsr -c")
 
-if [[ -z "$choice" ]]; then
+if [ -n "$session_picker" ]; then
+    tmux switch-client -t "$session_picker"
     exit 0
 fi
 
-if [[ "$choice" == "$new_session_msg" ]]; then
-    dir=$(find ~ -maxdepth 2 -type d 2>/dev/null | \
-        fzf --border=rounded --border-label="Directories")
-    if [[ -z "$dir" ]]; then
-        exit 0
-    fi
-    cd "$dir" || exit 1
-
-    # make sure jmattaa/scripts exists!!!!!!!
-    tn
-else
-    tmux switch-client -t "$choice"
+# new session
+session_dir=$(find ~ ~/dev -maxdepth 1 -type d 2>/dev/null | \
+    fzf "${fzf_flags[@]}" --preview="lsr -c {}")
+if [ -z "$session_dir" ]; then
+    exit 0
 fi
 
+cd "$session_dir" || exit 1
+
+# make sure jmattaa/scripts is installed!!!!!!!!!!
+tn
