@@ -6,7 +6,7 @@ sessions=$(tmux list-sessions -F '#S' | grep -v "^$current_session\$")
 fzf_flags=("--border=rounded" "--border-label=$current_session")
 
 session_picker=$(echo "$sessions" | fzf "${fzf_flags[@]}" \
-    --preview="tmux display-message -p -t {} '#{session_path}' | xargs lsr -c")
+    --preview="tmux list-windows -t {} -F '#W'")
 
 if [ -n "$session_picker" ]; then
     tmux switch-client -t "$session_picker"
