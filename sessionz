@@ -14,8 +14,9 @@ if [ -n "$session_picker" ]; then
 fi
 
 # new session
-session_dir=$(find ~ ~/dev -maxdepth 1 -type d 2>/dev/null | \
+session_dir=$(zoxide query -l 2>/dev/null | \
     fzf "${fzf_flags[@]}" --preview="lsr -c {}")
+
 if [ -z "$session_dir" ]; then
     exit 0
 fi
